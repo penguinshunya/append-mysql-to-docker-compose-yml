@@ -26,33 +26,35 @@ def main(
     
     with open("docker-compose.yml", "r") as f:
         data = yaml.load(f, yaml.Loader)
-        if data is None:
-            data = {}
-        if "version" not in data:
-            data["version"] = "3"
-        if "services" not in data:
-            data["services"] = {}
-        data["services"][name] = {
-            "image": "mysql:5.7",
-            "ports": [f"{port}:3306"],
-            "environment": [
-                "MYSQL_ROOT_PASSWORD=root",
-                "MYSQL_DATABASE=test",
-            ]
-        }
-        data["services"][aname] = {
-            "image": "phpmyadmin",
-            "ports": [f"{aport}:80"],
-            "environment": [
-                "PMA_ARBITRARY=1",
-                f"PMA_HOST={name}",
-                "PMA_USER=root",
-                "PMA_PASSWORD=root",
-            ]
-        }
-        tmpFileName = f"{uuid.uuid4()}.yml"
-        with open(tmpFileName, "w") as f:
-            yaml.dump(data, f)
+
+    if data is None:
+        data = {}
+    if "version" not in data:
+        data["version"] = "3"
+    if "services" not in data:
+        data["services"] = {}
+    data["services"][name] = {
+        "image": "mysql:5.7",
+        "ports": [f"{port}:3306"],
+        "environment": [
+            "MYSQL_ROOT_PASSWORD=root",
+            "MYSQL_DATABASE=test",
+        ]
+    }
+    data["services"][aname] = {
+        "image": "phpmyadmin",
+        "ports": [f"{aport}:80"],
+        "environment": [
+            "PMA_ARBITRARY=1",
+            f"PMA_HOST={name}",
+            "PMA_USER=root",
+            "PMA_PASSWORD=root",
+        ]
+    }
+    tmpFileName = f"{uuid.uuid4()}.yml"
+    with open(tmpFileName, "w") as f:
+        yaml.dump(data, f)
+        
     os.remove("docker-compose.yml")
     os.rename(tmpFileName, "docker-compose.yml")
 
