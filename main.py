@@ -43,7 +43,12 @@ def main(
         data["services"][aname] = {
             "image": "phpmyadmin",
             "ports": [f"{aport}:80"],
-            "environment": ["PMA_ARBITRARY=1"]
+            "environment": [
+                "PMA_ARBITRARY=1",
+                f"PMA_HOST={name}",
+                "PMA_USER=root",
+                "PMA_PASSWORD=root",
+            ]
         }
         tmpFileName = f"{uuid.uuid4()}.yml"
         with open(tmpFileName, "w") as f:
