@@ -1,31 +1,38 @@
-import fire
+"""append mysql service to docker-compose.yml"""
+
 import hashlib
 import os
 import random
 import uuid
+
+import fire
 import yaml
 
 pwd = os.getcwd()
-hash = hashlib.md5(pwd.encode())
-hexHash = hash.hexdigest()
-random.seed(int(hexHash[:8], 16))
+md5 = hashlib.md5(pwd.encode())
+
+HEX_HASH = md5.hexdigest()
+random.seed(int(HEX_HASH[:8], 16))
 mysqlPort = random.randint(1024, 65535)
 while True:
     phpMyAdminPort = random.randint(1024, 65535)
     if phpMyAdminPort != mysqlPort:
         break
 
+
 def main(
-    name=f"mysql-{hexHash}", 
-    port=mysqlPort, 
-    aname=f"phpmyadmin-{hexHash}", 
+    name=f"mysql-{HEX_HASH}",
+    port=mysqlPort,
+    aname=f"phpmyadmin-{HEX_HASH}",
     aport=phpMyAdminPort
 ):
+    """main function"""
     # docker-compose.yml が存在しないときは作成する
-    open("docker-compose.yml", "a+").close()
-    
-    with open("docker-compose.yml", "r") as f:
-        data = yaml.load(f, yaml.Loader)
+    with open("docker-compose.yml", "a+", encoding="utf8") as file:
+        pass
+
+    with open("docker-compose.yml", "r", encoding="utf8") as file:
+        data = yaml.load(file, yaml.Loader)
 
     if data is None:
         data = {}
@@ -51,12 +58,13 @@ def main(
             "PMA_PASSWORD=root",
         ]
     }
-    tmpFileName = f"{uuid.uuid4()}.yml"
-    with open(tmpFileName, "w") as f:
-        yaml.dump(data, f)
-        
+    tmp_file_name = f"{uuid.uuid4()}.yml"
+    with open(tmp_file_name, "w", encoding="utf8") as file:
+        yaml.dump(data, file)
+
     os.remove("docker-compose.yml")
-    os.rename(tmpFileName, "docker-compose.yml")
+    os.rename(tmp_file_name, "docker-compose.yml")
+
 
 if __name__ == "__main__":
     fire.Fire(main)
